@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600|Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 
     <title>Devices</title>
 
@@ -17,6 +17,11 @@
 
     <style type="text/css">
 
+		.col-xs-12, .col-sm-12{
+			padding-left:5px; !important
+			padding-right:5px; !important
+		}
+		
 		.titleTx{
 				font-family:"open_sansbold",sans-serif,Helvetica,Arial;
 				font-size:12px;
@@ -24,13 +29,17 @@
 				font-weight:600;
 			}
 
-		.border0 { border-top: 2px solid #0f8243; }
-        .border1 { border-top: 2px solid #F90; }
-        .border2 { border-top: 2px solid #F1C40F; }
+		.border0 { border-top: 2px solid #0075A3; }
+        .border1 { border-top: 2px solid #E2BC22; }
+        .border2 { border-top: 2px solid #266D4A; }
+		.border3 { border-top: 2px solid #36ADD9; }
+        .border4 { border-top: 2px solid #234D70; }
 
-    	.line-0 { stroke:#0f8243; }
-    	.line-1 { stroke:#F90; }
-    	.line-2 { stroke:#F00; }
+    	.line-0 { stroke:#0075A3; }
+    	.line-1 { stroke:#E2BC22; }
+    	.line-2 { stroke:#266D4A; }
+		.line-3 { stroke:#36ADD9; }
+    	.line-4 { stroke:#234D70; }
 
 
     	.circle {
@@ -48,15 +57,6 @@
 			stroke-width:2px;
 		}
 
-		#headType, #headControl{
-			margin-bottom:10px;
-		}
-
-		#breader{
-			font-size:11px;
-			margin-bottom:10px;
-		}
-
 		.bars{
 			stroke:none;
 			fill:#0f8243;
@@ -70,9 +70,9 @@
 		}
 
 	  h6 {
-         font-size: 16px;
+         font-size: 14px;
          margin: 16px 0 8px 0;
-         font-weight: 700;
+         font-weight: 600;
          color:#323132;
       }
 
@@ -145,7 +145,7 @@
 		var charts;
         var pymChild = null;
         var graphHeight;
-        var numberCharts = 6; // to start the program off - first draw
+        var numberCharts = 4; // to start the program off - first draw
 		var counter = 0; // breadcrumb hack
 		var jump = false;
 
@@ -172,17 +172,18 @@
 
 				var threshold_md = 600;
 				var threshold_sm = dvc.optional.mobileBreakpoint;
+				 if(chart_width > 700) chart_width = 700;
 
 				var innerPadding_values = {	// May need to make dynamic" && ie 2 charts displayed. Could put this in with button creation.
 											//  t    r    b    l
 										"sm":[ 50 , 15 , 40 , 30 ],
-										"md":[ 35 , 15 , 50 , 30 ],
-										"lg":[ 35 , 15 , 50 , 30 ]
+										"md":[ 35 , 20 , 70 , 30 ],
+										"lg":[ 35 , 20 , 70 , 30 ]
 										/* top , right , bottom , left */
 									}
 
 				//set variables for chart dimensions dependent on width of #graphic. Could put this in with button creation
-				if (graphic.width() < threshold_sm) {
+				if (graphic.width()+20 < threshold_sm) { //console.log("mobile");
 						var margin = {top: dvc.optional.margin_sm[0], right: dvc.optional.margin_sm[1], bottom: dvc.optional.margin_sm[2], left: dvc.optional.margin_sm[3]};
 						var chart_width = graphic.width()/* - margin.left - margin.right*/;
 						height = (Math.ceil((chart_width * dvc.optional.aspectRatio_sm[1]) / dvc.optional.aspectRatio_sm[0]) - margin.top - margin.bottom);
@@ -192,7 +193,7 @@
 						//numberRows = parseInt(dvc.essential.numRows_sm_md_lg[dvc.selectedVariableIndex][0]);
 						numberColumns = dvc.essential.numColumns_sm_md_lg[0];
 
-				} else if (graphic.width() < threshold_md){
+				} else if (graphic.width()+20 < threshold_md){ //console.log("tablet");
 						var margin = {top: dvc.optional.margin_md[0], right: dvc.optional.margin_md[1], bottom: dvc.optional.margin_md[2], left: dvc.optional.margin_md[3]};
 						var chart_width = graphic.width()/* - margin.left - margin.right*/;
 						height = (Math.ceil((chart_width * dvc.optional.aspectRatio_md[1]) / dvc.optional.aspectRatio_md[0]) - margin.top - margin.bottom);
@@ -202,7 +203,7 @@
 						//numberRows = parseInt(dvc.essential.numRows_sm_md_lg[dvc.selectedVariableIndex][1]);
 						numberColumns = dvc.essential.numColumns_sm_md_lg[1];
 
-				} else {
+				} else { //console.log("desktop");
 						var margin = {top: dvc.optional.margin_lg[0], right: dvc.optional.margin_lg[1], bottom: dvc.optional.margin_lg[2], left: dvc.optional.margin_lg[3]}
 						var chart_width = graphic.width()/* - margin.left - margin.right*/;
 						height = (Math.ceil((chart_width * dvc.optional.aspectRatio_lg[1]) / dvc.optional.aspectRatio_lg[0]) - margin.top - margin.bottom);
@@ -212,11 +213,13 @@
 						//numberRows = parseInt(dvc.essential.numRows_sm_md_lg[dvc.fileReadCount][2]);
 						numberColumns = dvc.essential.numColumns_sm_md_lg[2];
 						//numberColumns = parseInt(config.essential.numColumns_sm_md_lg[dvc.dataIndex][2]);
-				}
+				};
 
-		// if(	chart_width >= 700) chart_width = 700;
-
-		//console.log("chart_width ="+ chart_width + "  height ="+ height);
+		height = (Math.ceil((chart_width * dvc.optional.aspectRatio_sm[1]) / dvc.optional.aspectRatio_sm[0]) - margin.top - margin.bottom);
+		
+		//console.log("chart_width ="+ chart_width, graphic.width() + "  height ="+ height);
+		
+		
 
 					//create legend
 							if(dvc.essential.legendLabels.length > 1)
@@ -240,14 +243,17 @@
 				// parse data into columns
 				var lines = {};
 				graphic_data = dvc.graphic_data_full;
+				console.log(graphic_data);
+				console.log(graphic_data[0]);
 
 		var myMinimum = 0;
 		var myMaximum = 0;
 
 			for ( var numLines = 0; numLines<dvc.essential.num_lines_url.length; numLines++ ) {  // 2 files at present
+			
 					lines[numLines] = {}; // two objects then
-
-					for (var column in graphic_data/*[dataIndex]*/[0][numLines][0] ) {
+console.log(numLines, graphic_data/*[dataIndex]*/[0][numLines][0]);
+					for (var column in graphic_data/*[dataIndex]*/[0][numLines][0] ) { console.log(column);
 						
 						if(column =="date") continue;
 								lines[numLines][column] = graphic_data/*[dataIndex]*/[0][numLines].map(function(d, i) {
@@ -268,7 +274,7 @@
 
 			} // end num_lines_url.length
 			//console.log("lines");
-			//console.log(lines[0]);
+			//console.log(lines);
 
 			// Strip out line data if needed
 			if(dvc.essential.addline === true){
@@ -299,17 +305,17 @@
 
 									//console.log("min,max,ticks,steps size: "+dvc.mrtsTicks);
 
-								var yDomain = [/*dvc.mrtsTicks[0]*/ 0, 100 /*dvc.mrtsTicks[1]*/]; //.toFixed(1)];
+								var yDomain = [/*dvc.mrtsTicks[0]*/ 85, 105 /*dvc.mrtsTicks[1]*/]; //.toFixed(1)];
 
 
 				// calcualte SM graph dimensions, and set up margins for base SM SVG ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 				numberRows = Math.ceil(numberCharts / numberColumns);
 				//console.log("col, row "+numberColumns, numberRows);
 
-				var graph_unitWidth = (chart_width-1) / numberColumns;
-				var graph_unitHeight = graph_unitWidth;
-
-
+				var graph_unitWidth = (chart_width - margin.left-margin.right - 2) / numberColumns;
+				var graph_unitHeight = height / numberColumns;
+				
+				//console.log(graph_unitWidth, graph_unitHeight);
 
 
 				// define x-axis
@@ -317,9 +323,9 @@
 				
 						if(dvc.essential.addline === true) graphic_data/*[dataIndex]*/[0][0].pop();
 						
-								x = d3.time.scale()
-										.range([0, (graph_unitWidth - innerPadding.left - innerPadding.right)])
-										.domain(d3.extent(graphic_data/*[dataIndex]*/[0][0], function(d) { return d.date; }));
+							x = d3.time.scale()
+									.range([0, (graph_unitWidth - innerPadding.left - innerPadding.right)])
+									.domain(d3.extent(graphic_data/*[dataIndex]*/[0][0], function(d) { return d.date; }));
 
 						} else { var xDom = [];
 									graphic_data/*[dataIndex]*/[0][0].forEach(function(d,i) {
@@ -363,7 +369,7 @@
 							var l = 0;
 
 							// for each 'column in data file'
-							for (var column in lines[y] ) {
+							for (var column in lines[y] ){
 
 								// if column counter is equal to graph panel number to draw
 								if ( l == k ) {
@@ -373,13 +379,13 @@
 									graphLines[y] = {};
 
 									// create lines object
-									graphLines[y][column] = lines[y][column].map(function(d, i) {
+									graphLines[y][column] = lines[y][column].map(function(d, i) { 
 
 										currentColoumn = column;
 
 										return {
 											'date': d.date,
-											'amt': +d.amt
+											'amt': d.amt
 										};
 									});
 
@@ -390,15 +396,14 @@
 							}// column in lines[y]
 
 						} // end num_lines_url.length loop
-//						console.log("currentColoumn");
-//						console.log(currentColoumn);
-//						console.log("graphLines");
-//						console.log(graphLines);
+						//console.log("currentColoumn");
+						//console.log(currentColoumn);
+						//console.log("graphLines");
+						//console.log(graphLines);
 
 						dvc.numGraphs = k;
 						xCoord = (i-1)*graph_unitWidth;
 						yCoord = (j-1)*graph_unitHeight;
-						//console.log(graph_unitWidth, graph_unitHeight);
 
 						// create and append small SVG panel for each individual graph, k
 						var svg = d3.select('#graphic')
@@ -418,22 +423,32 @@
 							.orient("bottom")
 
 				//specify number of ticks on x axis and whether 1st and last data point labels are included
+				//  "xAxisTextFormat_sm_md_lg" : ["%y", "%y", "%m"],
+				//  "x_num_ticks_sm_md_lg" : [8,8,8],
+				
 					if(dvc.essential.chart_type/*[dataIndex]*/ === "line"){
-						if(graphic.width()<threshold_sm){
-							xAxis.tickValues(x.ticks(dvc.optional.x_num_ticks_sm_md_lg[0]).concat( x.domain() ));
+						
+						if(graphic.width()<threshold_sm){ console.log("mobile");
+							xAxis.tickValues(x.ticks(dvc.optional.x_num_ticks_sm_md_lg[0])); //.concat( x.domain() ));
+							xAxis.tickFormat(d3.time.format(dvc.optional.xAxisTextFormat_sm_md_lg[0]));
 										}
-						else if (graphic.width() <= threshold_md){
+						else if (graphic.width() <= threshold_md){ console.log("tablet");
 							xAxis.tickValues(x.ticks(dvc.optional.x_num_ticks_sm_md_lg[1]));
+							xAxis.tickFormat(d3.time.format(dvc.optional.xAxisTextFormat_sm_md_lg[1]));
 										}
-						else {
+						else { console.log("desk" );
+						//var fmt = d3.time.format(dvc.optional.xAxisTextFormat_sm_md_lg[2]);
 							xAxis.tickValues(x.ticks(dvc.optional.x_num_ticks_sm_md_lg[2]));
+							xAxis.tickFormat(d3.time.format(dvc.optional.xAxisTextFormat_sm_md_lg[2]));
 										}
-					} else {
+					} 
+					
+					else { // bar format
 							xAxis.tickFormat(function(d){ return d.substr(3,4); }) // Grab just the last digit
 					}
 
-
-
+					
+					
 
 						//set up y-axis scale
 						y = d3.scale.linear()
@@ -502,17 +517,6 @@
 		// **** only draw y-axis config labels if drawing graphs in first COLUMN  - find Bootstrap alternative
 				if ( j == 1 ) {
 
-					//create x axis, if y axis doesn't start at 0 drop x axis accordingly
-						svg.append('g')
-							.attr('class', 'x axis')
-							.attr('id', 'focusXAxis' + k)
-							.attr('transform', function(){
-								if(yDomain[0] != 0) { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom + innerPadding.bottom/2.5 ) + ")" } // + graph_drop
-								else { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom) + ")"; }
-							})
-							.call(xAxis);
-
-
 						// add y-axis label and line annotation if they are to both be only on the first in the row
 							svg.append("text")
 								.attr("class" , "label")
@@ -539,16 +543,22 @@
 				}else { // Not first column
 							d3.select('#focusYAxis' + k).selectAll('text').remove();
 
-			//create x axis, if y axis doesn't start at 0 drop x axis accordingly
-						svg.append('g')
-							.attr('class', 'x axis')
-							.attr('id', 'focusXAxis' + k)
-							.attr('transform', function(){
-								if(yDomain[0] != 0) { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom + innerPadding.bottom/2.5 ) + ")" } // + graph_drop
-								else { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom) + ")"; }
-							})
-							.call(xAxis);
 				}
+				
+			//create x axis on every chart (you can place so bottom row only), if y axis doesn't start at 0 drop x axis accordingly
+				svg.append('g')
+					.attr('class', 'x axis')
+					.attr('id', 'focusXAxis' + k)
+					.attr('transform', function(){
+						if(yDomain[0] != 0) { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom + innerPadding.bottom/2.5 ) + ")" } // + graph_drop
+						else { return "translate(" + (innerPadding.left) + "," + (graph_unitHeight - innerPadding.bottom) + ")"; }
+					})
+					.call(xAxis);
+
+				
+				var xTicks = d3.select("#focusXAxis" + k).selectAll("g.tick");
+					xTicks.attr("id", function(d,i){ return "tick"+i; });
+					xTicks[0].forEach(function(d,i){ if (i%2 == 0) d3.select("#focusXAxis" + k).select("#tick"+i).select("text").remove();  });
 
 
 		if(dvc.essential.chart_type/*[dataIndex]*/ === "line")
@@ -643,7 +653,8 @@
 							.attr('id', function(d){ return currentColoumn.replace(/\d/g,''); })
 							.style("pointer-events" , "none")
 							.style("fill" , "#666")
-							.attr('transform', "translate(" + (innerPadding.left-5) + ", 12) ")
+							.attr("text-anchor", "end")
+							.attr('transform', "translate(" + (graph_unitWidth - innerPadding.right) + ", 12) ")
 							.tspans(function(d,i){
 												if(jump === true) {
 																	return d3.wordwrap(currentColoumn/*.substring(7)*/, 40);
